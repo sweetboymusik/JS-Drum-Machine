@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>JS Drum Machine</title>
+  </head>
+  <body>
+    <audio src="sounds/bd.ogg" class="bd"></audio>
+    <audio src="sounds/sd.ogg" class="sd"></audio>
+    <audio src="sounds/lt.ogg" class="lt"></audio>
+    <audio src="sounds/rs.ogg" class="rs"></audio>
+    <audio src="sounds/cl.ogg" class="cp"></audio>
+    <audio src="sounds/oh.ogg" class="oh"></audio>
+    <audio src="sounds/ch.ogg" class="ch"></audio>
+
+    <div class="machine">
+      <div class="title-section">
+        <h4>
+          EB's
+          <div class="h4-line"></div>
+        </h4>
+        <h1>Trinket-001</h1>
+        <h3>Rhythm Machine</h3>
+      </div>
+
+      <div class="big-knob-container">
+        <div class="big-knob-border">
+          <div class="knob-num zero">0</div>
+          <div class="knob-num one">1</div>
+          <div class="knob-num two">2</div>
+          <div class="knob-num three">3</div>
+          <div class="knob-num four">4</div>
+          <div class="knob-num five">5</div>
+          <div class="knob-num six">6</div>
+          <div class="knob-num seven">7</div>
+          <div class="knob-num eight">8</div>
+          <div class="knob-num nine">9</div>
+          <div class="knob-num ten">10</div>
+          <div class="big-knob">
+            <div class="big-knob-line"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-container">
+        <!-- KICK -->
+        <div class="control-strip" id="bd">
+          <div class="knob-container">
+            <div class="knob vol">
+              <div class="knob-line"></div>
+            </div>
+            <div class="scale-container">
+              <div class="scale-line one"></div>
+              <div class="scale-line three"></div>
+              <div class="scale-line five"></div>
+              <div class="scale-line seven"></div>
+              <div class="scale-line ten"></div>
+            </div>
+            <p>GAIN</p>
+          </div>
+          <div class="knob-container">
+            <div class="knob pan">
+              <div class="knob-line"></div>
+            </div>
+            <div class="scale-container">
+              <div class="scale-line one"></div>
+              <div class="scale-line three"></div>
+              <div class="scale-line five"></div>
+              <div class="scale-line seven"></div>
+              <div class="scale-line ten"></div>
+            </div>
+            <p>PAN</p>
+          </div>
+          <div class="knob-container">
+            <div class="knob tune">
+              <div class="knob-line"></div>
+            </div>
+            <div class="scale-container">
+              <div class="scale-line one"></div>
+              <div class="scale-line three"></div>
+              <div class="scale-line five"></div>
+              <div class="scale-line seven"></div>
+              <div class="scale-line ten"></div>
+            </div>
+            <p>RATE</p>
+          </div>
+          <div class="control-label">
+            <p>Kick</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="trigger-container">
+        <button class="trigger red" id="bd">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger red" id="sd">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger red" id="lt">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger red" id="mt">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger orange" id="ht">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger orange" id="rs">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger orange" id="cp">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger orange" id="cb">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger yellow" id="cy">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger yellow" id="oh">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger yellow" id="ch">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger yellow">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger white">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger white">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger white">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+        <button class="trigger white">
+          <div class="trigger-indicator"></div>
+          <div class="trigger-divider"></div>
+        </button>
+      </div>
+
+      <div class="trigger-labels top">
+        <label for="bd">1</label>
+        <label for="sd">2</label>
+        <label for="lt">3</label>
+        <label for="mt">4</label>
+        <label for="ht">5</label>
+        <label for="rs">6</label>
+        <label for="cp">7</label>
+        <label for="cb">8</label>
+        <label for="cy">9</label>
+        <label for="oh">10</label>
+        <label for="ch">11</label>
+        <label for="cy">12</label>
+        <label for="oh">13</label>
+        <label for="ch">14</label>
+        <label for="cy">15</label>
+        <label for="cy">16</label>
+      </div>
+
+      <div class="trigger-labels">
+        <label for="bd">BD</label>
+        <label for="sd">SD</label>
+        <label for="lt">LT</label>
+        <label for="mt">MT</label>
+        <label for="ht">HT</label>
+        <label for="rs">RS</label>
+        <label for="cp">CP</label>
+        <label for="cb">CB</label>
+        <label for="cy">CY</label>
+        <label for="oh">OH</label>
+        <label for="ch">CH</label>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
