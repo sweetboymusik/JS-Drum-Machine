@@ -10,8 +10,12 @@
     <audio src="sounds/bd.ogg" class="bd"></audio>
     <audio src="sounds/sd.ogg" class="sd"></audio>
     <audio src="sounds/lt.ogg" class="lt"></audio>
+    <audio src="sounds/lt.ogg" class="mt"></audio>
+    <audio src="sounds/lt.ogg" class="ht"></audio>
     <audio src="sounds/rs.ogg" class="rs"></audio>
     <audio src="sounds/cl.ogg" class="cp"></audio>
+    <audio src="sounds/oh.ogg" class="cb"></audio>
+    <audio src="sounds/oh.ogg" class="cy"></audio>
     <audio src="sounds/oh.ogg" class="oh"></audio>
     <audio src="sounds/ch.ogg" class="ch"></audio>
 
@@ -48,7 +52,7 @@
         <!-- KICK -->
         <div class="control-strip" id="bd">
           <div class="knob-container">
-            <div class="knob vol">
+            <div class="knob vol" id="gain">
               <div class="knob-line"></div>
             </div>
             <div class="scale-container">
@@ -61,7 +65,7 @@
             <p>GAIN</p>
           </div>
           <div class="knob-container">
-            <div class="knob pan">
+            <div class="knob pan" id="pan">
               <div class="knob-line"></div>
             </div>
             <div class="scale-container">
@@ -74,7 +78,7 @@
             <p>PAN</p>
           </div>
           <div class="knob-container">
-            <div class="knob tune">
+            <div class="knob tune" id="rate">
               <div class="knob-line"></div>
             </div>
             <div class="scale-container">
@@ -171,11 +175,11 @@
         <label for="cy">9</label>
         <label for="oh">10</label>
         <label for="ch">11</label>
-        <label for="cy">12</label>
-        <label for="oh">13</label>
-        <label for="ch">14</label>
-        <label for="cy">15</label>
-        <label for="cy">16</label>
+        <label for="">12</label>
+        <label for="">13</label>
+        <label for="">14</label>
+        <label for="">15</label>
+        <label for="">16</label>
       </div>
 
       <div class="trigger-labels">

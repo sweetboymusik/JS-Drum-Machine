@@ -2,6 +2,9 @@
 
 * {
   box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none; /*Safari*/
+  -moz-user-select: none; /*Firefox*/
 }
 
 body {
@@ -192,8 +195,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  rotate: 360deg;
-  transition: rotate 0.1s ease-in-out;
+  rotate: 0deg;
 }
 
 .knob.vol {
@@ -270,8 +272,8 @@ body {
 
 .scale-line.five {
   position: absolute;
-  top: -41px;
-  left: 48%;
+  top: -42px;
+  left: 47%;
 }
 
 .scale-line.three {
