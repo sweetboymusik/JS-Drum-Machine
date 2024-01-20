@@ -1,10 +1,16 @@
 // DOM elements
 const triggers = document.querySelectorAll(".trigger");
+const pads = document.querySelectorAll(".pad");
 const strips = document.querySelectorAll(".control-strip");
 const sounds = document.querySelectorAll("audio");
 const gainKnobs = document.querySelectorAll(".vol");
 const panKnobs = document.querySelectorAll(".pan");
 const rateKnobs = document.querySelectorAll(".tune");
+const bigKnob = document.querySelector(".big-knob");
+const playBtn = document.querySelector(".play");
+const tempoSlider = document.querySelector(".tempo");
+
+console.log(tempoSlider.value);
 
 // helper functions
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -12,6 +18,7 @@ const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 const scale = (num, in_min, in_max, out_min, out_max) => {
   return ((num - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 };
+const tempo = () => 60000 / tempoSlider.value / 2;
 
 // state vars
 let mouseDown = false;
@@ -23,6 +30,7 @@ let currentRotation = 0;
 let knobMax = 128;
 let gainMax = 2;
 let panMax = 1;
+let seqRunning = false;
 
 const knobStates = ["230deg", "290deg", "360deg", "70deg", "125deg"];
 const gainStates = [0.0, 0.25, 0.5, 0.75, 1.0];
@@ -30,54 +38,95 @@ const gainStates = [0.0, 0.25, 0.5, 0.75, 1.0];
 // set up the audio streams/pans/gains/rates
 const audioContext = new AudioContext();
 audioContext.resume();
-
 const bd = audioContext.createMediaElementSource(sounds[0]);
 const sd = audioContext.createMediaElementSource(sounds[1]);
-const lt = audioContext.createMediaElementSource(sounds[2]);
-const mt = audioContext.createMediaElementSource(sounds[3]);
-const ht = audioContext.createMediaElementSource(sounds[4]);
-const rs = audioContext.createMediaElementSource(sounds[5]);
-const cp = audioContext.createMediaElementSource(sounds[6]);
-const cb = audioContext.createMediaElementSource(sounds[7]);
+const cp = audioContext.createMediaElementSource(sounds[2]);
+const rs = audioContext.createMediaElementSource(sounds[3]);
+const lt = audioContext.createMediaElementSource(sounds[4]);
+const ht = audioContext.createMediaElementSource(sounds[5]);
+const ch = audioContext.createMediaElementSource(sounds[6]);
+const oh = audioContext.createMediaElementSource(sounds[7]);
 const cy = audioContext.createMediaElementSource(sounds[8]);
-const oh = audioContext.createMediaElementSource(sounds[9]);
-const ch = audioContext.createMediaElementSource(sounds[10]);
 
 const bdGain = audioContext.createGain();
 const sdGain = audioContext.createGain();
-const ltGain = audioContext.createGain();
-const mtGain = audioContext.createGain();
-const htGain = audioContext.createGain();
-const rsGain = audioContext.createGain();
 const cpGain = audioContext.createGain();
-const cbGain = audioContext.createGain();
-const cyGain = audioContext.createGain();
-const ohGain = audioContext.createGain();
+const rsGain = audioContext.createGain();
+const ltGain = audioContext.createGain();
+const htGain = audioContext.createGain();
 const chGain = audioContext.createGain();
+const ohGain = audioContext.createGain();
+const cyGain = audioContext.createGain();
+const masterGain = audioContext.createGain();
 
 const bdPanner = audioContext.createStereoPanner();
 const sdPanner = audioContext.createStereoPanner();
-const ltPanner = audioContext.createStereoPanner();
-const mtPanner = audioContext.createStereoPanner();
-const htPanner = audioContext.createStereoPanner();
-const rsPanner = audioContext.createStereoPanner();
 const cpPanner = audioContext.createStereoPanner();
-const cbPanner = audioContext.createStereoPanner();
-const cyPanner = audioContext.createStereoPanner();
-const ohPanner = audioContext.createStereoPanner();
+const rsPanner = audioContext.createStereoPanner();
+const ltPanner = audioContext.createStereoPanner();
+const htPanner = audioContext.createStereoPanner();
 const chPanner = audioContext.createStereoPanner();
+const ohPanner = audioContext.createStereoPanner();
+const cyPanner = audioContext.createStereoPanner();
 
-bd.connect(bdGain).connect(bdPanner).connect(audioContext.destination);
-sd.connect(sdGain).connect(sdPanner).connect(audioContext.destination);
-lt.connect(ltGain).connect(ltPanner).connect(audioContext.destination);
-mt.connect(mtGain).connect(mtPanner).connect(audioContext.destination);
-ht.connect(htGain).connect(htPanner).connect(audioContext.destination);
-rs.connect(rsGain).connect(rsPanner).connect(audioContext.destination);
-cp.connect(cpGain).connect(cpPanner).connect(audioContext.destination);
-cb.connect(cbGain).connect(cbPanner).connect(audioContext.destination);
-cy.connect(cyGain).connect(cyPanner).connect(audioContext.destination);
-oh.connect(ohGain).connect(ohPanner).connect(audioContext.destination);
-ch.connect(chGain).connect(chPanner).connect(audioContext.destination);
+bd.connect(bdGain).connect(bdPanner).connect(masterGain);
+sd.connect(sdGain).connect(sdPanner).connect(masterGain);
+cp.connect(cpGain).connect(cpPanner).connect(masterGain);
+rs.connect(rsGain).connect(rsPanner).connect(masterGain);
+lt.connect(ltGain).connect(ltPanner).connect(masterGain);
+ht.connect(htGain).connect(htPanner).connect(masterGain);
+ch.connect(chGain).connect(chPanner).connect(masterGain);
+oh.connect(ohGain).connect(ohPanner).connect(masterGain);
+cy.connect(cyGain).connect(cyPanner).connect(masterGain);
+masterGain.connect(audioContext.destination);
+
+// sequencer data
+const sequence = [
+  [1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+  [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
+playBtn.addEventListener("mousedown", () => {
+  if (seqRunning === false) {
+    seqRunning = true;
+    playSequence(tempo());
+  } else {
+    seqRunning = false;
+  }
+});
+
+function playSequence(tempo) {
+  idxSEQ = 0;
+  let seqInterval = setInterval(() => {
+    if (seqRunning === true) {
+      sounds.forEach(function (sound, idx) {
+        if (sequence[idx][idxSEQ] === 1) {
+          if (sounds[idx].currentTime !== 0) {
+            sounds[idx].pause();
+            sounds[idx].currentTime = 0;
+          }
+
+          sounds[idx].play();
+        }
+      });
+
+      if (idxSEQ == 15) {
+        idxSEQ = -1;
+      }
+
+      idxSEQ++;
+    } else {
+      clearInterval(seqInterval);
+    }
+  }, tempo);
+}
 
 // functions
 function getPanner(s) {
@@ -91,9 +140,6 @@ function getPanner(s) {
     case "lt":
       return ltPanner;
       break;
-    case "mt":
-      return mtPanner;
-      break;
     case "ht":
       return htPanner;
       break;
@@ -102,9 +148,6 @@ function getPanner(s) {
       break;
     case "cp":
       return cpPanner;
-      break;
-    case "cb":
-      return cbPanner;
       break;
     case "cy":
       return cyPanner;
@@ -131,9 +174,6 @@ function getGain(s) {
     case "lt":
       return ltGain;
       break;
-    case "mt":
-      return mtGain;
-      break;
     case "ht":
       return htGain;
       break;
@@ -142,9 +182,6 @@ function getGain(s) {
       break;
     case "cp":
       return cpGain;
-      break;
-    case "cb":
-      return cbGain;
       break;
     case "cy":
       return cyGain;
@@ -155,6 +192,8 @@ function getGain(s) {
     case "ch":
       return chGain;
       break;
+    case "master":
+      return masterGain;
     default:
       return null;
   }
@@ -170,16 +209,35 @@ function knobTurn(e) {
   currentRotation = parseInt(window.getComputedStyle(currentKnobID).rotate);
 }
 
+function bigKnobTurn(e) {
+  currentSoundID = this.id;
+  currentKnobType = "gain";
+  currentKnobID = this;
+
+  mousePositionY = e.clientY;
+  mouseDown = true;
+  currentRotation = parseInt(window.getComputedStyle(currentKnobID).rotate);
+}
+
 function rotationChange(e) {
   if (mouseDown) {
-    // rotate the knob
-    newRotation = clamp(
-      -(e.clientY - mousePositionY) * 2.5 + currentRotation,
-      -knobMax,
-      knobMax
-    );
+    if (currentKnobID === bigKnob) {
+      newRotation = clamp(
+        -(e.clientY - mousePositionY) * 1.5 + currentRotation,
+        -(knobMax + 20),
+        knobMax + 20
+      );
 
-    currentKnobID.style.rotate = `${newRotation}deg`;
+      currentKnobID.style.rotate = `${newRotation}deg`;
+    } else {
+      newRotation = clamp(
+        -(e.clientY - mousePositionY) * 2.5 + currentRotation,
+        -knobMax,
+        knobMax
+      );
+
+      currentKnobID.style.rotate = `${newRotation}deg`;
+    }
 
     valueChange();
   }
@@ -190,7 +248,7 @@ function valueChange() {
 
   if (currentKnobType === "gain") {
     currentNode = getGain(currentSoundID);
-    let param = scale(newRotation, -knobMax, knobMax, 0, gainMax);
+    let param = scale(newRotation, -knobMax, knobMax, 0.145, gainMax);
     currentNode.gain.value = param;
   } else if (currentKnobType === "pan") {
     currentNode = getPanner(currentSoundID);
@@ -207,10 +265,10 @@ sounds.forEach((sound) => {
   sound.volume = gainStates[2];
 });
 
-// set up triggers to play sounds
-triggers.forEach((trigger) => {
-  trigger.addEventListener("mousedown", () => {
-    const soundID = trigger.id;
+// set up pads to play sounds
+pads.forEach((pad) => {
+  pad.addEventListener("mousedown", () => {
+    const soundID = pad.id;
     const audio = document.querySelector("." + soundID);
 
     if (audio.currentTime !== 0) {
@@ -219,6 +277,13 @@ triggers.forEach((trigger) => {
     }
 
     audio.play();
+
+    if (!pad.classList.contains("selected")) {
+      pads.forEach((pad) => {
+        pad.classList.remove("selected");
+      });
+      pad.classList.add("selected");
+    }
   });
 });
 
@@ -240,4 +305,20 @@ window.addEventListener("mousemove", rotationChange);
 // check for mouse up event
 window.addEventListener("mouseup", () => {
   mouseDown = false;
+});
+
+// turn on/off trigger lights when pressed
+triggers.forEach((trigger) => {
+  trigger.addEventListener("mousedown", () => {
+    const indicator = trigger.children[0];
+    indicator.classList.toggle("trig-on");
+  });
+});
+
+// big volume knob
+bigKnob.addEventListener("mousedown", bigKnobTurn);
+bigKnob.addEventListener("dblclick", () => {
+  currentKnobID.style.rotate = `${0}deg`;
+  newRotation = parseInt(currentKnobID.style.rotate);
+  valueChange();
 });

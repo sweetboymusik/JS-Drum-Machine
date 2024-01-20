@@ -1,5 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Muli&display=swap");
 
+:root {
+  --color-1: hsl(0, 60%, 50%);
+  --color-2: hsl(33, 60%, 50%);
+  --color-3: hsl(60, 60%, 50%);
+  --color-4: hsl(0, 10%, 90%);
+  --color-5: rgb(132, 132, 132);
+  --color-bg: rgb(69, 69, 69);
+}
+
 * {
   box-sizing: border-box;
   user-select: none;
@@ -20,16 +29,16 @@ body {
 }
 
 .machine {
-  background-color: rgb(69, 69, 69);
+  background-color: var(--color-bg);
   width: 1100px;
-  height: 400px;
+  height: 420px;
   position: relative;
   border-radius: 10px;
   box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.25);
 }
 
 .title-section {
-  background-color: grey;
+  background-color: var(--color-5);
   width: 200px;
   margin-left: 30px;
   margin-top: 30px;
@@ -39,13 +48,13 @@ body {
 }
 
 .title-section h1 {
-  color: orange;
+  color: var(--color-2);
   margin: 0;
   padding: 0;
 }
 
 .title-section h3 {
-  color: yellow;
+  color: var(--color-3);
   margin: 0;
   padding: 0;
 }
@@ -62,15 +71,16 @@ body {
   height: 150px;
   width: 200px;
   position: absolute;
-  top: 45%;
+  top: 32%;
   margin-left: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: scale(0.75);
 }
 
 .big-knob-border {
-  background-color: lightgray;
+  background-color: var(--color-5);
   height: 170px;
   width: 170px;
   display: flex;
@@ -80,17 +90,18 @@ body {
 }
 
 .big-knob {
-  border: 6px rgba(255, 255, 255, 0.7) dashed;
+  border: 6px var(--color-5) dashed;
   border-style: double;
   background-color: black;
   height: 130px;
   width: 130px;
   border-radius: 50%;
   position: relative;
+  rotate: 0deg;
 }
 
 .big-knob-line {
-  background-color: orange;
+  background-color: var(--color-2);
   height: 30px;
   width: 6px;
   position: absolute;
@@ -153,7 +164,7 @@ body {
 }
 
 .control-container {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--color-4);
   height: 200px;
   width: 805px;
   position: absolute;
@@ -170,8 +181,8 @@ body {
 }
 
 .control-strip {
-  background-color: rgb(69, 69, 69);
-  width: 75px;
+  background-color: var(--color-bg);
+  width: 88px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,7 +197,7 @@ body {
 }
 
 .knob {
-  background-color: white;
+  background-color: var(--color-4);
   height: 36px;
   width: 36px;
   border-radius: 100%;
@@ -199,19 +210,19 @@ body {
 }
 
 .knob.vol {
-  background-color: red;
+  background-color: var(--color-1);
 }
 
 .knob.pan {
-  background-color: orange;
+  background-color: var(--color-2);
 }
 
 .knob.tune {
-  background-color: yellow;
+  background-color: var(--color-3);
 }
 
 .knob-container p {
-  color: white;
+  color: var(--color-4);
   font-size: 8px;
   margin: 0;
   padding: 0;
@@ -231,7 +242,7 @@ body {
 }
 
 .control-label {
-  background-color: white;
+  background-color: var(--color-4);
   width: 100%;
   text-align: center;
   position: absolute;
@@ -326,6 +337,11 @@ body {
   top: 10%;
 }
 
+.trig-on {
+  background-color: rgba(255, 0, 0, 0.524);
+  border: 2px rgba(0, 0, 0, 0.7) solid;
+}
+
 .trigger-divider {
   background-color: rgba(255, 255, 255, 0.4);
   height: 2px;
@@ -348,19 +364,19 @@ body {
 }
 
 .trigger.red {
-  background-color: red;
+  background-color: var(--color-1);
 }
 
 .trigger.orange {
-  background-color: orange;
+  background-color: var(--color-2);
 }
 
 .trigger.yellow {
-  background-color: yellow;
+  background-color: var(--color-3);
 }
 
 .trigger.white {
-  background-color: white;
+  background-color: var(--color-4);
 }
 
 .trigger-labels {
@@ -379,7 +395,7 @@ body {
 .trigger-labels.top {
   transform: translateY(-100px);
   background: none;
-  color: white;
+  color: var(--color-4);
   margin-right: 0;
   padding: 0 10px;
   font-size: 14px;
@@ -390,4 +406,57 @@ body {
   justify-content: center;
   width: 35px;
   padding: 0;
+}
+
+.pad {
+  height: 30px;
+  width: 76px;
+  border-radius: 4px;
+  border: 1px black solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: -16px;
+}
+
+.pad:active {
+  transform: scale(0.98);
+}
+
+.pad-text {
+  font-size: 10px;
+}
+
+.selected {
+  /* border: 2px rgb(138, 61, 61) solid; */
+  background-color: pink;
+  color: rgb(138, 61, 61);
+}
+
+.transport {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  gap: 16px;
+}
+
+.strip-master-label {
+  color: white;
+  position: absolute;
+  top: 100px;
+  left: 156px;
+  rotate: -90deg;
+  letter-spacing: 4px;
+}
+
+.play {
+  background-color: var(--color-3);
+  border: none;
+  border-radius: 8px;
+  height: 60px;
+  border: 1px black solid;
 }
