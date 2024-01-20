@@ -454,9 +454,13 @@ body {
 }
 
 .play {
-  background-color: var(--color-3);
+  background-color: green;
   border: none;
   border-radius: 8px;
   height: 60px;
   border: 1px black solid;
+}
+
+.playing {
+  background-color: red;
 }

@@ -10,8 +10,6 @@ const bigKnob = document.querySelector(".big-knob");
 const playBtn = document.querySelector(".play");
 const tempoSlider = document.querySelector(".tempo");
 
-console.log(tempoSlider.value);
-
 // helper functions
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
@@ -31,6 +29,7 @@ let knobMax = 128;
 let gainMax = 2;
 let panMax = 1;
 let seqRunning = false;
+let currentPad = "bd";
 
 const knobStates = ["230deg", "290deg", "360deg", "70deg", "125deg"];
 const gainStates = [0.0, 0.25, 0.5, 0.75, 1.0];
@@ -81,33 +80,25 @@ cy.connect(cyGain).connect(cyPanner).connect(masterGain);
 masterGain.connect(audioContext.destination);
 
 // sequencer data
-const sequence = [
-  [1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0],
-  [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-  [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-  [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-playBtn.addEventListener("mousedown", () => {
-  if (seqRunning === false) {
-    seqRunning = true;
-    playSequence(tempo());
-  } else {
-    seqRunning = false;
-  }
-});
+const sequence = {
+  bd: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  sd: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  cp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  rs: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  lt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ht: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ch: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  oh: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  cy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+};
 
 function playSequence(tempo) {
   idxSEQ = 0;
   let seqInterval = setInterval(() => {
     if (seqRunning === true) {
       sounds.forEach(function (sound, idx) {
-        if (sequence[idx][idxSEQ] === 1) {
+        const drum = sound.className;
+        if (sequence[`${drum}`][idxSEQ] === 1) {
           if (sounds[idx].currentTime !== 0) {
             sounds[idx].pause();
             sounds[idx].currentTime = 0;
@@ -265,11 +256,24 @@ sounds.forEach((sound) => {
   sound.volume = gainStates[2];
 });
 
+// event listeners
+playBtn.addEventListener("mousedown", () => {
+  if (seqRunning === false) {
+    seqRunning = true;
+    playSequence(tempo());
+  } else {
+    seqRunning = false;
+  }
+
+  playBtn.classList.toggle("playing");
+});
+
 // set up pads to play sounds
 pads.forEach((pad) => {
   pad.addEventListener("mousedown", () => {
     const soundID = pad.id;
     const audio = document.querySelector("." + soundID);
+    currentPad = pad.id;
 
     if (audio.currentTime !== 0) {
       audio.pause();
@@ -284,6 +288,18 @@ pads.forEach((pad) => {
       });
       pad.classList.add("selected");
     }
+
+    // update the triggers for the new pad
+    triggers.forEach((trigger) => {
+      const indicator = trigger.children[0];
+      const seqNum = parseInt(trigger.id.replace("t", ""));
+
+      // turn off all indicators
+      indicator.classList.remove("trig-on");
+      if (sequence[`${currentPad}`][seqNum - 1] === 1) {
+        indicator.classList.add("trig-on");
+      }
+    });
   });
 });
 
@@ -312,6 +328,15 @@ triggers.forEach((trigger) => {
   trigger.addEventListener("mousedown", () => {
     const indicator = trigger.children[0];
     indicator.classList.toggle("trig-on");
+    console.log(currentPad);
+
+    const seqNum = parseInt(trigger.id.replace("t", ""));
+
+    if (sequence[`${currentPad}`][seqNum - 1] === 1) {
+      sequence[`${currentPad}`][seqNum - 1] = 0;
+    } else if (sequence[`${currentPad}`][seqNum - 1] === 0) {
+      sequence[`${currentPad}`][seqNum - 1] = 1;
+    }
   });
 });
 
